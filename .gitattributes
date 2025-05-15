@@ -1,1 +1,2 @@
+*.psd filter=lfs diff=lfs merge=lfs -text
 .terraform/providers/registry.terraform.io/hashicorp/google/6.34.1/windows_amd64/terraform-provider-google_v6.34.1_x5.exe filter=lfs diff=lfs merge=lfs -text
