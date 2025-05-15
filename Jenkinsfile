@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'docker-agent'
+    }
     environment {
         GCP_PROJECT = 'kalyan-devops-2025'
         IMAGE = "us-central1-docker.pkg.dev/kalyan-devops-2025/my-repo/my-first-project:v1"
@@ -12,7 +14,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'docker build -t ${IMAGE}:v1 .'
+                sh 'docker build -t ${IMAGE}:latest .'
             }
         }
         stage('Push') {
@@ -21,14 +23,14 @@ pipeline {
                     sh '''
                         gcloud auth activate-service-account --key-file=${GCP_SA_KEY}
                         gcloud auth configure-docker us-central1-docker.pkg.dev
-                        docker push ${IMAGE}:v1
+                        docker push ${IMAGE}:latest
                     '''
                 }
             }
         }
         stage('Deploy') {
             steps {
-                sh 'kubectl set image deployment/flask-app flask-app=${IMAGE}:v1'
+                sh 'kubectl set image deployment/flask-app flask-app=${IMAGE}:latest'
             }
         }
     }
