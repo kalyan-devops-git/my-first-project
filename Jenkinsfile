@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    environment {
+        GCP_PROJECT = 'kalyan-devops-2025'
+        IMAGE = "us-central1-docker.pkg.dev/kalyan-devops-2025/my-repo/my-first-project:v1"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'docker build -t ${IMAGE}:v1 .'
+            }
+        }
+        stage('Push') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-sa-key', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        gcloud auth activate-service-account --key-file=${GCP_SA_KEY}
+                        gcloud auth configure-docker us-central1-docker.pkg.dev
+                        docker push ${IMAGE}:v1
+                    '''
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'kubectl set image deployment/flask-app flask-app=${IMAGE}:v1'
+            }
+        }
+    }
+}
