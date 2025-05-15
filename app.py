@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     return render_template_string("""
-        <h1>Sample Python Project</h1>
+        <h1>Sample Python Project2 jenkins</h1>
         <form action="/greet" method="post">
             <label for="name">Enter your name:</label>
             <input type="text" id="name" name="name" required>
