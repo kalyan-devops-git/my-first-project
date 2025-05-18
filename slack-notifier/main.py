@@ -1,12 +1,20 @@
 import functions_framework
 import requests
+from flask import abort
 
 @functions_framework.http
-def notify_slack(request):
-    webhook_url = 'https://hooks.slack.com/services/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'
-    message = request.get_json().get('message', 'Deployment completed!')
-    
+def slack_notifier(request):
+    webhook_url = 'https://hooks.slack.com/services/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'
+    try:
+        data = request.get_json(silent=True)
+        message = data.get('message', 'Deployment completed!') if data else 'Deployment completed!'
+    except Exception:
+        message = 'Deployment completed!'
+
     payload = {'text': message}
     response = requests.post(webhook_url, json=payload)
-    
+
+    if response.status_code != 200:
+        abort(500, f"Slack webhook failed: {response.text}")
+
     return {'status': response.status_code}
