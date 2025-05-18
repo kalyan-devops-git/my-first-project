@@ -34,5 +34,14 @@ pipeline {
                 sh "kubectl set image deployment/flask-app flask-app=${IMAGE} --record"
             }
         }
+        stage('Notify') {
+            steps {
+                sh '''
+                    curl -X POST [FUNCTION-URL] \
+                    -H "Content-Type: application/json" \
+                    -d '{"message": "Deployment to GKE completed!"}'
+                '''
+            }
+        }
     }
 }
